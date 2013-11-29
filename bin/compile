@@ -77,7 +77,7 @@ function deep-cp (){
 function deep-mv (){
   deep-cp $1 $2
 
-  rm -fr $1/!(tmp)
+  rm -fr $1/!\(tmp\)
   find -H $1 -maxdepth 1 -name '.*' -a \( -type d -o -type f -o -type l \) -exec rm -fr '{}' \;
 }
 
