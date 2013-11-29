@@ -79,6 +79,33 @@ mkdir -p $CACHE_DIR
 
 
 
+puts-step "Creating Virtualenv version $(virtualenv --version)"
+
+# Try to create the virtualenv.
+OUT=$(virtualenv --python $PYTHON_EXE --distribute --never-download --prompt='(venv) ' $VIRTUALENV_LOC 2>&1)
+
+[ $? -ne 0 -o -n "$CLEAN_VIRTUALENV" ] && {
+  if [ -n "$CLEAN_VIRTUALENV" ]
+    then echo " !     CLEAN_VIRTUALENV set, rebuilding virtualenv."
+    else echo " !     Virtualenv corrupt, rebuilding."
+  fi
+  for dir in $VIRTUALENV_DIRS; do
+    rm -fr $dir &> /dev/null || true
+  done
+  OUT=$(virtualenv --python $PYTHON_EXE --distribute --never-download  --prompt='(venv) ' $VIRTUALENV_LOC )
+}
+echo "$OUT" | indent
+
+set -e
+
+# Pylibmc support.
+# See [`bin/steps/pylibmc`](pylibmc.html).
+source $BIN_DIR/steps/pylibmc
+
+# Activate the Virtualenv.
+puts-step "Activating virtualenv"
+source $VIRTUALENV_LOC/bin/activate
+
 # Restore old artifacts from the cache.
 for dir in $CACHED_DIRS; do
   cp -R $CACHE_DIR/$dir . &> /dev/null || true
@@ -141,32 +168,7 @@ set -e
 
 set +e
 puts-step "Preparing Python interpreter ($PYTHON_VERSION)"
-puts-step "Creating Virtualenv version $(virtualenv --version)"
 
-# Try to create the virtualenv.
-OUT=$(virtualenv --python $PYTHON_EXE --distribute --never-download --prompt='(venv) ' $VIRTUALENV_LOC 2>&1)
-
-[ $? -ne 0 -o -n "$CLEAN_VIRTUALENV" ] && {
-  if [ -n "$CLEAN_VIRTUALENV" ]
-    then echo " !     CLEAN_VIRTUALENV set, rebuilding virtualenv."
-    else echo " !     Virtualenv corrupt, rebuilding."
-  fi
-  for dir in $VIRTUALENV_DIRS; do
-    rm -fr $dir &> /dev/null || true
-  done
-  OUT=$(virtualenv --python $PYTHON_EXE --distribute --never-download  --prompt='(venv) ' $VIRTUALENV_LOC )
-}
-echo "$OUT" | indent
-
-set -e
-
-# Pylibmc support.
-# See [`bin/steps/pylibmc`](pylibmc.html).
-source $BIN_DIR/steps/pylibmc
-
-# Activate the Virtualenv.
-puts-step "Activating virtualenv"
-source $VIRTUALENV_LOC/bin/activate
 
 # Install Mercurial if it appears to be required.
 if (grep -Fiq "hg+" requirements.txt) then
