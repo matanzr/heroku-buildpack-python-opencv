@@ -16,11 +16,11 @@ CACHED_DIRS=".heroku"
 
 PIP_DOWNLOAD_CACHE=${PIP_DOWNLOAD_CACHE:-$CACHE_DIR/pip_downloads}
 
-VIRTUALENV_LOC=".heroku/venv"
+VIRTUALENV_LOC=".heroku/python"
 LEGACY_TRIGGER="lib/python2.7"
 PROFILE_PATH="$BUILD_DIR/.profile.d/python.sh"
 
-DEFAULT_PYTHON_VERSION="python-2.7.3"
+DEFAULT_PYTHON_VERSION="python-2.7.4"
 PYTHON_EXE="/app/.heroku/python/bin/python"
 
 # Sanitizing environment variables.
